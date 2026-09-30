@@ -21,7 +21,7 @@ app.get("/", authMiddleware("ADMIN", "USER"), (req, res) => {
     res.send("Welcome to the Blog API!");
 });
 
-app.use("/posts", postRouter);
+app.use("/api/posts", postRouter);
 
 
 export default app;

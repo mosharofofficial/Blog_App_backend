@@ -1,14 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { auth } from "../lib/auth";
 
-
-
-
-
-
-
- 
-
 export const authMiddleware = (...roles: string[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
