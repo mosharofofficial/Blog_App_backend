@@ -27,8 +27,19 @@ const getCommentsByAuthorIdController = controllerWrapper(async (req:Request, re
     return res.status(200).json(comments);
 })
 
+
+const updateCommentController = controllerWrapper(async (req:Request, res:Response) =>{
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ error: "bad request" });
+    }
+    const updatedComment = await commentService.updateCommentService(id as string, req.body);
+    return res.status(200).json(updatedComment);
+})
+
 export const commentController = {
     createCommentController,
     getCommentByIdController,
-    getCommentsByAuthorIdController
+    getCommentsByAuthorIdController,
+    updateCommentController
 };

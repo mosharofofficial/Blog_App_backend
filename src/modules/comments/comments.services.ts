@@ -70,8 +70,18 @@ const getCommentsByAuthorIdService = async (authorId: string) => {
     return comments;
 }
 
+const updateCommentService = async (id: string, data: Partial<ICommentData>) => {
+    const updatedComment = await prisma.comment.update({
+        where: {
+            id
+        }, 
+        data
+    })
+}
+
 export const commentService = {
     createCommentService,
     getCommentByIdService,
-    getCommentsByAuthorIdService
+    getCommentsByAuthorIdService,
+    updateCommentService
 };
