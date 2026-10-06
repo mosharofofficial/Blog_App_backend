@@ -1,0 +1,77 @@
+import { prisma } from "../../lib/prisma";
+
+
+interface ICommentData {
+    content: string;
+    authorId: string;
+    postId: string;
+    parentId?: string;
+}
+
+
+const createCommentService = async (data: ICommentData) => {
+    await prisma.post.findFirstOrThrow({
+        where: {
+            id: data.postId
+        }
+    })
+
+    await prisma.user.findFirstOrThrow({
+        where: {
+            id: data.authorId
+        }
+    })
+
+    return await prisma.comment.create({
+        data
+    })
+};
+
+const getCommentByIdService = async (id: string) => {
+    const comment = await prisma.comment.findUnique({
+        where: {
+            id: id,
+        },
+        include: {
+            post: {
+                select: {
+                    id: true,
+                    title: true,
+                    views: true
+                }
+            }
+        }
+        
+    })
+    return comment;
+}
+
+const getCommentsByAuthorIdService = async (authorId: string) => {
+    const comments = await prisma.comment.findMany({
+        where: {
+            authorId: authorId,
+        },
+        include: {
+            post: {
+                select: {
+                    id: true,
+                    title: true,
+                    views: true
+                }
+            },
+            replies: {
+                select: {
+                    id: true,
+                    content: true,
+                }
+            }
+        }
+    });
+    return comments;
+}
+
+export const commentService = {
+    createCommentService,
+    getCommentByIdService,
+    getCommentsByAuthorIdService
+};

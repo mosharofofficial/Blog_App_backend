@@ -9,6 +9,7 @@ export const authMiddleware = (...roles: string[]) => {
                 headers: req.headers as any
             }
         );
+        console.log("Session:", session);
         if (!session) {
             return res.status(401).json({ error: "Unauthorized" });
         }

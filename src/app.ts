@@ -4,6 +4,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import cors from "cors";
 import { authMiddleware } from "./middlewares/authMiddleware";
+import { commentsRouter } from "./modules/comments/comments.router";
 
 const app: express.Application = express();
 
@@ -22,6 +23,7 @@ app.get("/", authMiddleware("ADMIN", "USER"), (req, res) => {
 });
 
 app.use("/api/posts", postRouter);
+app.use("/api/comments", commentsRouter);
 
 
 export default app;

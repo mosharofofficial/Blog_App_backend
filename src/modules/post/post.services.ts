@@ -33,7 +33,8 @@ const createPostService = async (data: Omit<Post, 'id' | 'createdAt' | 'updatedA
 }
 
 
-const getAllPostsService = async (search: string|undefined = undefined, tags: string[] = [], isFeatured: boolean | undefined = undefined) => {
+const getAllPostsService = async (search: string|undefined = undefined, tags: string[] = [], isFeatured: boolean | undefined = undefined, page: number, limit: number, sortBy: string | undefined, sortOrder: string | undefined) => {
+    
     const query: any = [];
     const searchQuery : any = {OR: [
                     { title: { contains: search as string, mode: 'insensitive' } },
@@ -58,18 +59,60 @@ const getAllPostsService = async (search: string|undefined = undefined, tags: st
     try {
         
         const res = await prisma.post.findMany({
-            where: {AND: query}
+            take: limit,
+            skip: (page - 1) * limit,
+            where: {AND: query},
+            orderBy: sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
+            include: {
+                _count: {select: {comments: true}}
+            }
+            
+
         });
         
         
         return res;
     } catch (error) {
+        console.log(error);
         throw new Error("Error fetching posts");
     }
 }
 
+
+const getPostByIdService = async (id: string) => {
+    return await prisma.$transaction(async (tx)=>{
+        await tx.post.update({
+            where: {id: id},
+            data: {views: {increment: 1}}
+        })
+        return await tx.post.findUnique({
+            where: {id: id},
+            include: {
+                comments: {
+                    where: {parentId: null, status: "APPROVED"},
+                    orderBy: {createdAt: 'desc'},
+                    include: {
+                        replies: {
+                            where: {status: "APPROVED"},
+                            include: {
+                                replies: {
+                                    where: {status: "APPROVED"},
+                                }
+                            }
+                        }
+                    }
+                },
+                _count: {select: {comments: true}}
+
+            }
+        })
+    })
+}
+
 export const postService = {
     createPostService,
-    getAllPostsService
+    getAllPostsService,
+    getPostByIdService
 };
+
 
