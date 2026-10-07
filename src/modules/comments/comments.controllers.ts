@@ -46,10 +46,27 @@ const deleteCommentController = controllerWrapper(async (req:Request, res:Respon
     return res.status(200).json(deletedComment);
 })
 
+
+const commentStatusUpdateController = controllerWrapper(async (req:Request, res:Response) =>{
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    if (!id) {
+        return res.status(400).json({ error: "bad request" });
+    }
+    if (!status || (status !== "APPROVED" && status !== "REJECTED")) {
+        return res.status(400).json({ error: "bad request" });
+    }
+
+    const updatedComment = await commentService.commentStatusUpdateService(id as string, status as "APPROVED" | "REJECTED");
+    return res.status(200).json(updatedComment);
+})
+
 export const commentController = {
     createCommentController,
     getCommentByIdController,
     getCommentsByAuthorIdController,
     updateCommentController,
-    deleteCommentController
+    deleteCommentController,
+    commentStatusUpdateController
 };

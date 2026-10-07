@@ -87,12 +87,32 @@ const deleteCommentService = async (id: string) => {
     })
 }
 
+const commentStatusUpdateService = async (id: string, status: "APPROVED" | "REJECTED") => {
+    const comment = await prisma.comment.findUniqueOrThrow({
+        where: {id},
+        
+    })
 
+    if (comment.status === status) {
+        return comment;
+    }
+    
+    return await prisma.comment.update({
+        where: {
+            id
+        },
+        data: {
+            status
+        }
+    })
+    
+}
 
 export const commentService = {
     createCommentService,
     getCommentByIdService,
     getCommentsByAuthorIdService,
     updateCommentService,
-    deleteCommentService
+    deleteCommentService,
+    commentStatusUpdateService
 };
