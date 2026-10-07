@@ -8,5 +8,8 @@ const router = express.Router();
 
 router.post('/create-post', authMiddleware("ADMIN", "USER"),postController.createPostController);
 router.get('/all-posts', postController.getAllPostsController);
-export const postRouter = router;
 router.get('/:id', postController.getPostByIdController);
+router.get('/my-posts', authMiddleware("USER"), postController.getUserOwnedPostsController);
+
+
+export const postRouter = router;

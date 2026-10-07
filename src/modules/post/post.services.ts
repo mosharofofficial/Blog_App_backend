@@ -109,10 +109,30 @@ const getPostByIdService = async (id: string) => {
     })
 }
 
+const getUserOwnedPostsService = async (authorId: string, page: number, limit: number) => {
+    try {
+        const posts = await prisma.post.findMany({
+            where: { authorId },
+            take: limit,
+            skip: (page - 1) * limit,
+            orderBy: {createdAt: "desc"},
+            include: {
+                _count: {select: {comments: true}}
+            }
+        });
+        return posts;
+    } catch (error) {
+        throw new Error("Error fetching user's posts");
+    }
+}
+
+
+
 export const postService = {
     createPostService,
     getAllPostsService,
-    getPostByIdService
+    getPostByIdService,
+    getUserOwnedPostsService
 };
 
 

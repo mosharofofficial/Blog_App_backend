@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { postService } from "./post.services";
+import { controllerWrapper } from "../../helpers/controllerWrapper";
 
 
 
@@ -54,8 +55,20 @@ const getPostByIdController = async (req: Request, res: Response) => {
     }
 };
 
+const getUserOwnedPostsController = controllerWrapper(async(req: Request, res: Response)=>{
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 5;
+    const userId = req.user?.id;
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+    const posts = await postService.getUserOwnedPostsService(userId, page, limit);
+    return res.status(200).json(posts);
+})
+
 export const postController = {
     createPostController,
     getAllPostsController,
-    getPostByIdController
+    getPostByIdController,
+    getUserOwnedPostsController
 };
