@@ -37,9 +37,19 @@ const updateCommentController = controllerWrapper(async (req:Request, res:Respon
     return res.status(200).json(updatedComment);
 })
 
+const deleteCommentController = controllerWrapper(async (req:Request, res:Response) =>{
+    const { id } = req.params;
+    if (!id) {
+        return res.status(400).json({ error: "bad request" });
+    }
+    const deletedComment = await commentService.deleteCommentService(id as string);
+    return res.status(200).json(deletedComment);
+})
+
 export const commentController = {
     createCommentController,
     getCommentByIdController,
     getCommentsByAuthorIdController,
-    updateCommentController
+    updateCommentController,
+    deleteCommentController
 };

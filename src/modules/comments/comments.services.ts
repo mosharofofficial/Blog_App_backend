@@ -79,9 +79,20 @@ const updateCommentService = async (id: string, data: Partial<ICommentData>) => 
     })
 }
 
+const deleteCommentService = async (id: string) => {
+    const deletedComment = await prisma.comment.delete({
+        where: {
+            id
+        }
+    })
+}
+
+
+
 export const commentService = {
     createCommentService,
     getCommentByIdService,
     getCommentsByAuthorIdService,
-    updateCommentService
+    updateCommentService,
+    deleteCommentService
 };

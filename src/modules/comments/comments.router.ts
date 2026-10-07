@@ -9,5 +9,5 @@ router.post('/create-comment', commentController.createCommentController);
 router.get('/:id', commentController.getCommentByIdController);
 router.get('/author/:authorId', commentController.getCommentsByAuthorIdController);
 router.patch('/:id', commentController.updateCommentController);
-
+router.delete('/:id', commentController.deleteCommentController);
 export const commentsRouter = router;
