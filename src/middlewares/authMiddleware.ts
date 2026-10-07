@@ -32,8 +32,8 @@ export const authMiddleware = (...roles: string[]) => {
         };
 
         next()
-        } catch (error) {
-            return res.status(500).json({ error: "Internal server error" });
+        } catch (error:any) {
+            return res.status(500).json({ error: error.message || "Internal server error" });
         }
     }
 }

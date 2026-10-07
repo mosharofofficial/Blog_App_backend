@@ -1,19 +1,6 @@
 
 
 
-// model Post {
-//   id            String     @id @default(uuid())
-//   title         String     @db.VarChar(255)
-//   content       String?    @db.Text
-//   thumbnail_url String?
-//   isFeatured    Boolean    @default(false)
-//   status        PostStatus @default(PUBLISHED)
-//   tags          String[]
-//   views         Int        @default(0)
-//   authorId      String
-//   createdAt     DateTime   @default(now())
-//   updatedAt     DateTime   @updatedAt
-//   comments      Comment[]
 
 import { Post } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
@@ -126,13 +113,49 @@ const getUserOwnedPostsService = async (authorId: string, page: number, limit: n
     }
 }
 
+const updateOwnedPostService = async (postId: string, authorId: string, data: Partial<Post>, isAdmin: boolean) => {
+    try {
+        const post = await prisma.post.findUniqueOrThrow({
+            where: { id: postId }
+        });
+        if (!isAdmin && post.authorId !== authorId) {
+            throw new Error("Post not found or not owned by user");
+        }
+        if (!isAdmin) {
+            delete data.isFeatured;
+        }
+        return await prisma.post.update({
+            where: { id: postId },
+            data
+        });
+    } catch (error) {
+        throw new Error("Error updating post");
+    }
+}
 
+const deleteOwnedPostService = async (postId: string, authorId: string, isAdmin: boolean) => {
+     try {
+        const post = await prisma.post.findUniqueOrThrow({
+            where: { id: postId }
+        });
+        if (!isAdmin && post.authorId !== authorId) {
+            throw new Error("Post not found or not owned by user");
+        }
+        return await prisma.post.delete({
+            where: { id: postId }
+        });
+    } catch (error) {
+        throw new Error("Error updating post");
+    }
+}
 
 export const postService = {
     createPostService,
     getAllPostsService,
     getPostByIdService,
-    getUserOwnedPostsService
+    getUserOwnedPostsService,
+    updateOwnedPostService,
+    deleteOwnedPostService
 };
 
 

@@ -10,6 +10,6 @@ router.post('/create-post', authMiddleware("ADMIN", "USER"),postController.creat
 router.get('/all-posts', postController.getAllPostsController);
 router.get('/:id', postController.getPostByIdController);
 router.get('/my-posts', authMiddleware("USER"), postController.getUserOwnedPostsController);
-
+router.patch('/my-posts/:id', authMiddleware("USER", "ADMIN"), postController.updateOwnedPostController);
 
 export const postRouter = router;

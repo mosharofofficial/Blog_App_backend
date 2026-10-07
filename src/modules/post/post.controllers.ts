@@ -66,9 +66,47 @@ const getUserOwnedPostsController = controllerWrapper(async(req: Request, res: R
     return res.status(200).json(posts);
 })
 
+const updateOwnedPostController = controllerWrapper(async(req: Request, res: Response)=>{
+    const { id } = req.params;
+    const userId = req.user?.id;
+    const isAdmin = req.user?.role === "ADMIN";
+    const data = req.body;
+
+    if (!id) {
+        return res.status(400).json({ error: "bad request" });
+    }
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const post = await postService.updateOwnedPostService(id as string, userId, data, isAdmin);
+    return res.status(200).json(post);
+})
+
+
+const deleteOwnedPostController = controllerWrapper(async (req:Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user?.id;
+    const isAdmin = req.user?.role === "ADMIN";
+
+    if (!id) {
+        return res.status(400).json({ error: "bad request" });
+    }
+
+    if (!userId) {
+        return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const post = await postService.deleteOwnedPostService(id as string, userId, isAdmin);
+    return res.status(200).json(post);
+})
+
 export const postController = {
     createPostController,
     getAllPostsController,
     getPostByIdController,
-    getUserOwnedPostsController
+    getUserOwnedPostsController,
+    updateOwnedPostController,
+    deleteOwnedPostController
 };
